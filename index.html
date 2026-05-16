@@ -4,191 +4,1136 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Case Management Simulyasiyası</title>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
   <style>
-    body { font-family: Arial; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #16a34a;
+      --green-light: #dcfce7;
+      --green-mid: #86efac;
+      --green-dark: #14532d;
+      --neutral-50: #f8fafc;
+      --neutral-100: #f1f5f9;
+      --neutral-200: #e2e8f0;
+      --neutral-400: #94a3b8;
+      --neutral-500: #64748b;
+      --neutral-700: #334155;
+      --neutral-900: #0f172a;
+      --red: #dc2626;
+      --red-light: #fee2e2;
+      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.05);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,.12);
+      --radius: 14px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--neutral-50);
+      color: var(--neutral-900);
+      min-height: 100vh;
+    }
+
+    /* ── LOGIN ── */
+    #login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 40%, #f0f9ff 100%);
+    }
+
+    .login-card {
+      background: white;
+      border-radius: 24px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--neutral-200);
+      animation: slideUp .4s ease;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .login-icon {
+      width: 64px; height: 64px;
+      background: var(--green-light);
+      border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 28px;
+    }
+
+    .login-card h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 24px;
+      text-align: center;
+      color: var(--neutral-900);
+      margin-bottom: 8px;
+    }
+
+    .login-card p {
+      text-align: center;
+      color: var(--neutral-500);
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+
+    /* ── FORM ELEMENTS ── */
+    label.field-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--neutral-500);
+      margin-bottom: 6px;
+    }
+
+    input[type="text"], input[type="date"], textarea, select {
+      width: 100%;
+      padding: 11px 16px;
+      border: 1.5px solid var(--neutral-200);
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--neutral-900);
+      background: white;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    input[type="text"]:focus, input[type="date"]:focus, textarea:focus, select:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(22,163,74,.12);
+    }
+
+    textarea { resize: vertical; min-height: 80px; }
+
+    .field-group { margin-bottom: 16px; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all .2s;
+    }
+
+    .btn-primary {
+      background: var(--green);
+      color: white;
+      box-shadow: 0 4px 12px rgba(22,163,74,.3);
+    }
+    .btn-primary:hover { background: #15803d; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(22,163,74,.35); }
+    .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--neutral-500);
+    }
+    .btn-ghost:hover { color: var(--neutral-900); }
+
+    .btn-outline {
+      background: white;
+      color: var(--neutral-700);
+      border: 1.5px solid var(--neutral-200);
+    }
+    .btn-outline:hover { border-color: var(--green); color: var(--green); }
+
+    /* ── HEADER ── */
+    header {
+      background: white;
+      border-bottom: 1px solid var(--neutral-200);
+      position: sticky; top: 0; z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .header-brand {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 700; font-size: 15px;
+    }
+
+    .header-brand-icon {
+      width: 32px; height: 32px;
+      background: var(--green);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+
+    .header-user {
+      display: flex; align-items: center; gap: 12px;
+    }
+
+    .user-badge {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--neutral-100);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .logout-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--neutral-400);
+      font-size: 18px;
+      transition: color .2s;
+    }
+    .logout-btn:hover { color: var(--red); }
+
+    /* ── MAIN ── */
+    main { max-width: 900px; margin: 0 auto; padding: 32px 24px; }
+
+    /* ── STEPPER ── */
+    .stepper {
+      display: flex; align-items: center;
+      margin-bottom: 32px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    .step-btn {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: none; cursor: pointer;
+      font-weight: 700; font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .2s;
+      flex-shrink: 0;
+    }
+
+    .step-btn.active {
+      background: var(--green); color: white;
+      box-shadow: 0 4px 12px rgba(22,163,74,.35);
+      transform: scale(1.1);
+    }
+
+    .step-btn.done {
+      background: var(--green-light); color: var(--green);
+    }
+
+    .step-btn.pending {
+      background: white; color: var(--neutral-400);
+      border: 1.5px solid var(--neutral-200);
+    }
+
+    .step-line {
+      flex: 1; height: 2px;
+      margin: 0 6px;
+      min-width: 24px;
+    }
+    .step-line.done { background: var(--green-mid); }
+    .step-line.pending { background: var(--neutral-200); }
+
+    /* ── SECTION CARD ── */
+    .section-card {
+      background: white;
+      border-radius: var(--radius);
+      border: 1px solid var(--neutral-200);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      animation: fadeIn .3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(12px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .section-header {
+      background: var(--neutral-50);
+      border-bottom: 1px solid var(--neutral-200);
+      padding: 16px 24px;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .section-header-icon { font-size: 20px; }
+
+    .section-header h2 {
+      font-size: 15px; font-weight: 700;
+      color: var(--neutral-900);
+    }
+
+    .section-body { padding: 28px 24px; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+    @media (max-width: 640px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    /* ── CHECKBOX ── */
+    .checkbox-wrap {
+      display: flex; align-items: center; gap: 10px;
+      cursor: pointer; padding: 6px 0;
+    }
+
+    .checkbox-box {
+      width: 20px; height: 20px;
+      border-radius: 6px;
+      border: 1.5px solid var(--neutral-200);
+      background: white;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: all .15s;
+    }
+
+    .checkbox-wrap input:checked ~ .checkbox-box,
+    .checkbox-wrap.checked .checkbox-box {
+      background: var(--green); border-color: var(--green);
+    }
+
+    .checkbox-wrap input { display: none; }
+    .checkbox-label { font-size: 14px; color: var(--neutral-700); }
+
+    /* ── SUBSECTION TITLE ── */
+    .sub-title {
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .08em;
+      color: var(--neutral-400);
+      margin-bottom: 12px; margin-top: 8px;
+    }
+
+    /* ── SWOT ── */
+    .swot-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+    }
+
+    .swot-cell {
+      border-radius: 10px; padding: 12px;
+      border: 1.5px solid;
+    }
+
+    .swot-cell.s { border-color: #86efac; background: #f0fdf4; }
+    .swot-cell.w { border-color: #fca5a5; background: #fff5f5; }
+    .swot-cell.o { border-color: #93c5fd; background: #eff6ff; }
+    .swot-cell.t { border-color: #fcd34d; background: #fffbeb; }
+
+    .swot-cell label { margin-bottom: 6px; }
+
+    /* ── SECTION FOOTER ── */
+    .section-footer {
+      background: var(--neutral-50);
+      border-top: 1px solid var(--neutral-200);
+      padding: 16px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    /* ── NEEDS CHIPS ── */
+    .needs-grid {
+      display: flex; flex-wrap: wrap; gap: 10px;
+    }
+
+    .need-chip {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 14px;
+      border-radius: 20px;
+      border: 1.5px solid var(--neutral-200);
+      cursor: pointer;
+      font-size: 13px; font-weight: 500;
+      transition: all .15s;
+      background: white;
+    }
+
+    .need-chip.active {
+      border-color: var(--green);
+      background: var(--green-light);
+      color: var(--green-dark);
+    }
+
+    /* ── CONFIRMATION BOX ── */
+    .confirm-box {
+      background: var(--green-light);
+      border: 1px solid var(--green-mid);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--green-dark);
+      margin-top: 8px;
+    }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(80px);
+      padding: 14px 24px;
+      border-radius: 40px;
+      font-size: 14px; font-weight: 600;
+      display: flex; align-items: center; gap: 10px;
+      box-shadow: var(--shadow-lg);
+      z-index: 9999;
+      transition: transform .35s cubic-bezier(.34,1.56,.64,1);
+      white-space: nowrap;
+    }
+
+    #toast.show { transform: translateX(-50%) translateY(0); }
+    #toast.success { background: var(--green); color: white; }
+    #toast.error   { background: var(--red); color: white; }
+
+    /* ── TEACHER VIEW ── */
+    .teacher-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .teacher-header h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 26px;
+    }
+
+    .submission-card {
+      background: white;
+      border: 1px solid var(--neutral-200);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
+      transition: box-shadow .2s;
+    }
+
+    .submission-card:hover { box-shadow: var(--shadow-lg); }
+
+    .submission-top {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .submission-name { font-weight: 700; font-size: 16px; }
+    .submission-time { font-size: 12px; color: var(--neutral-400); margin-top: 2px; }
+
+    .badge-done {
+      background: var(--green-light); color: var(--green-dark);
+      padding: 4px 10px; border-radius: 20px;
+      font-size: 11px; font-weight: 700;
+    }
+
+    .submission-meta {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+    }
+
+    .meta-item span {
+      display: block; font-size: 10px;
+      text-transform: uppercase; letter-spacing: .07em;
+      color: var(--neutral-400); margin-bottom: 2px;
+    }
+
+    .meta-item p { font-size: 13px; color: var(--neutral-700); }
+
+    .empty-state {
+      background: white;
+      border: 2px dashed var(--neutral-200);
+      border-radius: var(--radius);
+      padding: 60px;
+      text-align: center;
+      color: var(--neutral-400);
+      font-size: 15px;
+    }
+
+    /* ── HIDDEN ── */
+    .hidden { display: none !important; }
+
+    /* ── PDF download btn ── */
+    .btn-pdf {
+      background: #1e40af;
+      color: white;
+      box-shadow: 0 4px 12px rgba(30,64,175,.25);
+    }
+    .btn-pdf:hover { background: #1d4ed8; transform: translateY(-1px); }
   </style>
 </head>
-
 <body>
 
+<!-- ══════════════════ LOGIN ══════════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-icon">📋</div>
+    <h1>Case Management Simulyasiyası</h1>
+    <p>Zəhmət olmasa ad və soyadınızı qeyd edərək daxil olun</p>
+
+    <div class="field-group">
+      <label class="field-label">Ad və Soyad</label>
+      <input type="text" id="login-name" placeholder="Məs: Əli Məmmədov" />
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="doLogin()">
+      Daxil ol
+    </button>
+
+    <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--neutral-100);text-align:center;">
+      <button class="btn btn-ghost" style="font-size:13px;" onclick="openTeacher()">
+        🔍 Müəllim girişi (Bütün nəticələr)
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ APP ══════════════════ -->
+<div id="app-screen" class="hidden">
+
+  <header>
+    <div class="header-inner">
+      <div class="header-brand">
+        <div class="header-brand-icon">📋</div>
+        <span class="hidden-sm">Case Management Simulyasiyası</span>
+      </div>
+      <div class="header-user">
+        <div class="user-badge">👤 <span id="display-name"></span></div>
+        <button class="logout-btn" onclick="doLogout()" title="Çıxış">✕</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- STEPPER -->
+    <div class="stepper" id="stepper"></div>
+
+    <!-- SECTION CARD -->
+    <div class="section-card" id="section-card">
+      <div class="section-header">
+        <span class="section-header-icon" id="sec-icon"></span>
+        <h2 id="sec-title"></h2>
+      </div>
+      <div class="section-body" id="sec-body"></div>
+      <div class="section-footer">
+        <button class="btn btn-ghost" id="btn-prev" onclick="prevSection()">← Geri</button>
+        <button class="btn btn-primary" id="btn-next" onclick="nextSection()">İrəli →</button>
+        <button class="btn btn-primary hidden" id="btn-save" onclick="saveForm()">💾 Tamamla və Saxla</button>
+      </div>
+    </div>
+
+    <!-- TEACHER VIEW -->
+    <div id="teacher-view" class="hidden">
+      <div class="teacher-header">
+        <h2>Tələbə Nəticələri</h2>
+        <button class="btn btn-outline" onclick="backToForm()">← Formaya qayıt</button>
+      </div>
+      <div id="submissions-list"></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
 <script>
-let FONT_LOADED = false;
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let studentName = '';
+let currentSection = 1;
+const TOTAL = 6;
 
-// ─────────────────────────────
-// FONT LOADER (UNICODE FIX)
-// ─────────────────────────────
-async function loadFont(doc) {
-  const url = "https://raw.githubusercontent.com/google/fonts/main/ofl/notosans/NotoSans-Regular.ttf";
+const SECTIONS = [
+  { icon: '📄', title: 'I BÖLMƏ: İDENTİFİKASİYA VƏ HÜQUQİ DAİRƏ' },
+  { icon: '👨‍👩‍👧', title: 'II BÖLMƏ: AİLƏ DİNAMİKASI VƏ SOSİAL ŞƏBƏKƏ' },
+  { icon: '🩺', title: 'III BÖLMƏ: TİBBİ STATUS VƏ FUNKSİONAL İMKANLAR' },
+  { icon: '🎓', title: 'IV BÖLMƏ: TƏHSİL, MƏŞĞULLUQ VƏ MALİYYƏ VƏZİYYƏTİ' },
+  { icon: '⚠️', title: 'V BÖLMƏ: MÜRACİƏT SƏBƏBİ, RİSKLƏR VƏ GÖZLƏNTİLƏR' },
+  { icon: '✅', title: 'VI BÖLMƏ: SOSİAL İŞÇİNİN YEKUN ANALİZİ (SWOT)' },
+];
 
-  const buffer = await fetch(url).then(r => r.arrayBuffer());
-
-  let binary = "";
-  const bytes = new Uint8Array(buffer);
-  for (let i = 0; i < bytes.byteLength; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  const base64 = btoa(binary);
-
-  doc.addFileToVFS("NotoSans.ttf", base64);
-  doc.addFont("NotoSans.ttf", "NotoSans", "normal");
-
-  FONT_LOADED = true;
+// ══════════════════════════════════════════════
+// FORM DATA
+// ══════════════════════════════════════════════
+function getFormData() {
+  return {
+    protocolNo:      v('protocolNo'),
+    date:            v('date'),
+    specialist:      v('specialist'),
+    fullName:        v('fullName'),
+    fin:             v('fin'),
+    birthDate:       v('birthDate'),
+    gender:          v('gender'),
+    idCard:          cb('idCard'),
+    idCardSeries:    v('idCardSeries'),
+    birthCert:       cb('birthCert'),
+    marriageCert:    cb('marriageCert'),
+    statusDoc:       cb('statusDoc'),
+    section1Note:    v('section1Note'),
+    familyMembers:   v('familyMembers'),
+    decisionMaker:   v('decisionMaker'),
+    legalDispute:    v('legalDispute'),
+    supportPerson:   v('supportPerson'),
+    livingEnv:       v('livingEnv'),
+    section2Note:    v('section2Note'),
+    diagnosis:       v('diagnosis'),
+    hospitalized:    v('hospitalized'),
+    selfCare:        v('selfCare'),
+    devices:         v('devices'),
+    mentalHealth:    v('mentalHealth'),
+    section3Note:    v('section3Note'),
+    education:       v('education'),
+    incomeCovers:    v('incomeCovers'),
+    debts:           v('debts'),
+    workInterest:    v('workInterest'),
+    talent:          v('talent'),
+    section4Note:    v('section4Note'),
+    trigger:         v('trigger'),
+    riskSuicide:     v('riskSuicide'),
+    riskHomeless:    v('riskHomeless'),
+    riskAbandonment: v('riskAbandonment'),
+    needDayCare:     chipActive('need-dayCare'),
+    needShelter:     chipActive('need-shelter'),
+    needPsycho:      chipActive('need-psycho'),
+    needFinancial:   chipActive('need-financial'),
+    needVocational:  chipActive('need-vocational'),
+    section5Note:    v('section5Note'),
+    swotS:           v('swotS'),
+    swotW:           v('swotW'),
+    swotO:           v('swotO'),
+    swotT:           v('swotT'),
+    finalOpinion:    v('finalOpinion'),
+  };
 }
 
-// ─────────────────────────────
-// PDF GENERATOR (FIXED)
-// ─────────────────────────────
-async function generatePDF(submission) {
+function v(id) {
+  const el = document.getElementById(id);
+  return el ? el.value : '';
+}
+
+function cb(id) {
+  const el = document.getElementById(id);
+  return el ? el.checked : false;
+}
+
+function chipActive(id) {
+  const el = document.getElementById(id);
+  return el ? el.classList.contains('active') : false;
+}
+
+// ══════════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════════
+function doLogin() {
+  const name = document.getElementById('login-name').value.trim();
+  if (!name) { showToast('Ad və soyadı daxil edin', 'error'); return; }
+  studentName = name;
+  document.getElementById('display-name').textContent = name;
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('app-screen').classList.remove('hidden');
+  document.getElementById('teacher-view').classList.add('hidden');
+  document.getElementById('section-card').classList.remove('hidden');
+  currentSection = 1;
+  renderStepper();
+  renderSection();
+}
+
+function openTeacher() {
+  studentName = 'Müəllim';
+  document.getElementById('display-name').textContent = 'Müəllim';
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('app-screen').classList.remove('hidden');
+  document.getElementById('section-card').classList.add('hidden');
+  document.getElementById('teacher-view').classList.remove('hidden');
+  document.getElementById('stepper').classList.add('hidden');
+  renderSubmissions();
+}
+
+function doLogout() {
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('app-screen').classList.add('hidden');
+  document.getElementById('login-name').value = '';
+  document.getElementById('stepper').classList.remove('hidden');
+}
+
+function backToForm() {
+  document.getElementById('teacher-view').classList.add('hidden');
+  document.getElementById('section-card').classList.remove('hidden');
+  document.getElementById('stepper').classList.remove('hidden');
+}
+
+// ══════════════════════════════════════════════
+// STEPPER
+// ══════════════════════════════════════════════
+function renderStepper() {
+  const el = document.getElementById('stepper');
+  let html = '';
+  for (let i = 1; i <= TOTAL; i++) {
+    const cls = i === currentSection ? 'active' : i < currentSection ? 'done' : 'pending';
+    html += `<button class="step-btn ${cls}" onclick="goSection(${i})">${i}</button>`;
+    if (i < TOTAL) {
+      html += `<div class="step-line ${i < currentSection ? 'done' : 'pending'}"></div>`;
+    }
+  }
+  el.innerHTML = html;
+}
+
+function goSection(n) { currentSection = n; renderStepper(); renderSection(); }
+function prevSection() { if (currentSection > 1) goSection(currentSection - 1); }
+function nextSection() { if (currentSection < TOTAL) goSection(currentSection + 1); }
+
+// ══════════════════════════════════════════════
+// RENDER SECTION
+// ══════════════════════════════════════════════
+function renderSection() {
+  const s = SECTIONS[currentSection - 1];
+  document.getElementById('sec-icon').textContent = s.icon;
+  document.getElementById('sec-title').textContent = s.title;
+  document.getElementById('sec-body').innerHTML = getSectionHTML(currentSection);
+
+  // prev/next buttons
+  document.getElementById('btn-prev').disabled = currentSection === 1;
+  const isLast = currentSection === TOTAL;
+  document.getElementById('btn-next').classList.toggle('hidden', isLast);
+  document.getElementById('btn-save').classList.toggle('hidden', !isLast);
+
+  // Post-render init
+  if (currentSection === 1) {
+    const idCard = document.getElementById('idCard');
+    const seriesRow = document.getElementById('idCardSeriesRow');
+    idCard.addEventListener('change', () => {
+      seriesRow.classList.toggle('hidden', !idCard.checked);
+    });
+  }
+
+  if (currentSection === 5) {
+    document.querySelectorAll('.need-chip').forEach(chip => {
+      chip.addEventListener('click', () => chip.classList.toggle('active'));
+    });
+  }
+}
+
+// ══════════════════════════════════════════════
+// SECTION HTML
+// ══════════════════════════════════════════════
+function field(label, id, type = 'text', placeholder = '') {
+  return `<div class="field-group">
+    <label class="field-label" for="${id}">${label}</label>
+    <input type="${type}" id="${id}" placeholder="${placeholder}" />
+  </div>`;
+}
+
+function textarea(label, id, placeholder = '') {
+  return `<div class="field-group">
+    <label class="field-label" for="${id}">${label}</label>
+    <textarea id="${id}" placeholder="${placeholder}"></textarea>
+  </div>`;
+}
+
+function checkbox(label, id) {
+  return `<label class="checkbox-wrap">
+    <input type="checkbox" id="${id}" />
+    <div class="checkbox-box">✓</div>
+    <span class="checkbox-label">${label}</span>
+  </label>`;
+}
+
+function chip(label, id) {
+  return `<div class="need-chip" id="${id}">${label}</div>`;
+}
+
+function getSectionHTML(n) {
+  if (n === 1) return `
+    <div class="grid-2">
+      <div>
+        <p class="sub-title">Ümumi Məlumat</p>
+        ${field('Protokol №', 'protocolNo', 'text', 'Məs: 2024-001')}
+        ${field('Tarix', 'date', 'date')}
+        ${field('Qiymətləndirən Mütəxəssis', 'specialist')}
+        ${field('Benefisiar Ad, Soyad', 'fullName')}
+        ${field('FİN', 'fin', 'text', 'Məs: 5AB12CD')}
+        ${field('Doğum Tarixi', 'birthDate', 'date')}
+        <div class="field-group">
+          <label class="field-label" for="gender">Cins</label>
+          <select id="gender">
+            <option value="">Seçin...</option>
+            <option>Kişi</option>
+            <option>Qadın</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <p class="sub-title">Sənəd Bazası</p>
+        ${checkbox('Şəxsiyyət vəsiqəsi', 'idCard')}
+        <div id="idCardSeriesRow" class="hidden" style="margin:8px 0 8px 30px;">
+          ${field('Seriya', 'idCardSeries')}
+        </div>
+        ${checkbox('Doğum şəhadətnaməsi', 'birthCert')}
+        ${checkbox('Nikah / Ölüm şəhadətnaməsi', 'marriageCert')}
+        ${checkbox('Qazi / Şəhid ailəsi statusu', 'statusDoc')}
+        <div style="margin-top:16px;">
+          ${textarea('Mütəxəssisin Qeydi', 'section1Note')}
+        </div>
+      </div>
+    </div>`;
+
+  if (n === 2) return `
+    ${textarea('Valideynlər və Uşaqlar (Adlar, yaşlar, münasibət)', 'familyMembers')}
+    <div class="grid-2">
+      ${field('Ailədə qərar qəbul edən əsas şəxs', 'decisionMaker')}
+      ${field('Məhkəmə çəkişməniz varmı?', 'legalDispute')}
+      ${field('Dəstək üçün ilk kimə müraciət edirsiniz?', 'supportPerson')}
+      ${field('Yaşayış mühiti (Otaq sayı, istilik)', 'livingEnv')}
+    </div>
+    ${textarea('Mütəxəssisin Qeydi', 'section2Note')}`;
+
+  if (n === 3) return `
+    ${textarea('Diaqnozlar və Əlillik (Qrup, forma 88)', 'diagnosis')}
+    <div class="grid-2">
+      ${field('Son 6 ayda xəstəxanada yatmısınızmı?', 'hospitalized')}
+      ${field('Özünəqulluq imkanları', 'selfCare')}
+      ${field('Cihazlardan istifadə (Eşitmə, görmə)', 'devices')}
+      ${field('Psixi sağlamlıq (Yuxu, iştah)', 'mentalHealth')}
+    </div>
+    ${textarea('Mütəxəssisin Qeydi', 'section3Note')}`;
+
+  if (n === 4) return `
+    ${textarea('Təhsil və Peşə (İxtisas, dillər)', 'education')}
+    <div class="grid-2">
+      ${field('Gəlir xərcləri bağlayırmı?', 'incomeCovers')}
+      ${field('Bank borcları (Kredit)', 'debts')}
+      ${field('İşləmək istəyirsinizmi?', 'workInterest')}
+      ${field('Xüsusi istedadınız varmı?', 'talent')}
+    </div>
+    ${textarea('Mütəxəssisin Qeydi', 'section4Note')}`;
+
+  if (n === 5) return `
+    ${textarea('Müraciət triqeri (Sizi bizə gətirən son hadisə)', 'trigger')}
+    <div class="grid-3" style="margin-bottom:16px;">
+      ${field('İntihar riski', 'riskSuicide')}
+      ${field('Evsizlik riski', 'riskHomeless')}
+      ${field('Tərk edilmə riski', 'riskAbandonment')}
+    </div>
+    <p class="sub-title">Xidmət növünə ehtiyac</p>
+    <div class="needs-grid" style="margin-bottom:16px;">
+      ${chip('🌅 Günərzi qayğı', 'need-dayCare')}
+      ${chip('🏠 Sığınacaq', 'need-shelter')}
+      ${chip('🧠 Psixososial dəstək', 'need-psycho')}
+      ${chip('💰 Maddi yardım', 'need-financial')}
+      ${chip('💼 Peşə yönümlü yardım', 'need-vocational')}
+    </div>
+    ${textarea('Mütəxəssisin Qeydi', 'section5Note')}`;
+
+  if (n === 6) return `
+    <div class="swot-grid" style="margin-bottom:16px;">
+      <div class="swot-cell s">
+        <label class="field-label">💪 Güclü Tərəflər</label>
+        <textarea id="swotS" placeholder="Müştərinin güclü cəhətləri..."></textarea>
+      </div>
+      <div class="swot-cell w">
+        <label class="field-label">⚡ Zəif Tərəflər</label>
+        <textarea id="swotW" placeholder="Çatışmazlıqlar..."></textarea>
+      </div>
+      <div class="swot-cell o">
+        <label class="field-label">🚀 İmkanlar</label>
+        <textarea id="swotO" placeholder="Mövcud imkanlar..."></textarea>
+      </div>
+      <div class="swot-cell t">
+        <label class="field-label">🔴 Təhlükələr</label>
+        <textarea id="swotT" placeholder="Risk amilləri..."></textarea>
+      </div>
+    </div>
+    ${textarea('MÜTƏXƏSSİS RƏYİ (Yekun)', 'finalOpinion', 'Sosial işçinin yekun qiymətləndirməsi...')}
+    <div class="confirm-box">
+      ✅ <strong>Təsdiq:</strong> Məlumatların doğruluğunu təsdiq edirəm və şəxsi məlumatlarımın yalnız xidmət məqsədilə istifadəsinə razıyam.
+    </div>`;
+
+  return '';
+}
+
+// ══════════════════════════════════════════════
+// SAVE + PDF
+// ══════════════════════════════════════════════
+function saveForm() {
+  const data = getFormData();
+  const submission = {
+    id: Date.now(),
+    studentName,
+    timestamp: new Date().toISOString(),
+    formData: data,
+  };
+
+  // Save to localStorage
+  const existing = JSON.parse(localStorage.getItem('submissions') || '[]');
+  existing.push(submission);
+  localStorage.setItem('submissions', JSON.stringify(existing));
+
+  showToast('✅ Məlumatlar saxlanıldı! PDF yüklənir...', 'success');
+  setTimeout(() => generatePDF(submission), 800);
+}
+
+// ══════════════════════════════════════════════
+// PDF GENERATION
+// ══════════════════════════════════════════════
+function generatePDF(submission) {
   const { jsPDF } = window.jspdf;
-
-  const doc = new jsPDF({
-    orientation: "portrait",
-    unit: "mm",
-    format: "a4"
-  });
-
-  await loadFont(doc);
-
-  doc.setFont("NotoSans");
-
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const d = submission.formData;
 
-  const W = 210;
-  const margin = 18;
-  let y = 60;
+  const W = 210, margin = 18;
+  let y = 0;
 
+  // Colors
   const GREEN = [22, 163, 74];
-  const DARK = [15, 23, 42];
-  const GRAY = [100, 116, 139];
+  const DARK  = [15, 23, 42];
+  const GRAY  = [100, 116, 139];
   const LIGHT = [241, 245, 249];
-
-  function safe(t) {
-    return String(t || "").normalize("NFC");
-  }
 
   function addPage() {
     doc.addPage();
     y = margin;
+    // subtle header line on new pages
+    doc.setDrawColor(...GREEN);
+    doc.setLineWidth(0.5);
+    doc.line(margin, 8, W - margin, 8);
   }
 
-  function checkY(h = 10) {
-    if (y + h > 270) addPage();
+  function checkY(need = 20) {
+    if (y + need > 275) addPage();
   }
 
-  function section(title) {
-    checkY(12);
-
+  function sectionHeader(title, icon = '') {
+    checkY(18);
     doc.setFillColor(...GREEN);
-    doc.roundedRect(margin, y, W - margin * 2, 10, 2, 2, "F");
-
+    doc.roundedRect(margin, y, W - margin * 2, 10, 2, 2, 'F');
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(10);
-    doc.text(safe(title), margin + 4, y + 6.5);
-
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${icon}  ${title}`, margin + 4, y + 6.5);
+    doc.setTextColor(...DARK);
     y += 14;
   }
 
-  function row(label, value) {
-    value = value === true ? "Bəli" : value === false ? "Xeyr" : value;
-    value = safe(value);
-
-    const lines = doc.splitTextToSize(value || "—", 120);
-    const h = lines.length * 6;
-
-    checkY(h + 6);
+  function row(label, value, indent = 0) {
+    if (!value && value !== false) value = '—';
+    if (typeof value === 'boolean') value = value ? 'Bəli' : 'Xeyr';
+    const lines = doc.splitTextToSize(String(value), W - margin * 2 - 55 - indent);
+    const h = Math.max(8, lines.length * 5 + 3);
+    checkY(h + 2);
 
     doc.setFillColor(...LIGHT);
-    doc.roundedRect(margin, y, W - margin * 2, h + 6, 2, 2, "F");
+    doc.roundedRect(margin + indent, y, W - margin * 2 - indent, h, 1.5, 1.5, 'F');
 
     doc.setTextColor(...GRAY);
-    doc.setFontSize(8);
-    doc.text(label, margin + 3, y + 5);
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'bold');
+    doc.text(label, margin + indent + 3, y + 5);
 
     doc.setTextColor(...DARK);
-    doc.text(lines, margin + 60, y + 5);
+    doc.setFontSize(8.5);
+    doc.setFont('helvetica', 'normal');
+    doc.text(lines, margin + indent + 55, y + 5);
 
-    y += h + 8;
+    y += h + 2;
   }
 
-  // ───────── COVER ─────────
+  function needsRow(label, active) {
+    checkY(7);
+    const color = active ? GREEN : [203, 213, 225];
+    doc.setFillColor(...color);
+    doc.circle(margin + 6, y + 3, 2.5, 'F');
+    doc.setTextColor(active ? 15 : 148, active ? 23 : 163, active ? 42 : 174);
+    doc.setFontSize(8.5);
+    doc.setFont('helvetica', active ? 'bold' : 'normal');
+    doc.text(label, margin + 11, y + 5);
+    y += 7;
+  }
+
+  // ── COVER ──
   doc.setFillColor(...GREEN);
-  doc.rect(0, 0, W, 50, "F");
+  doc.rect(0, 0, W, 52, 'F');
 
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(16);
-  doc.text("Case Management Simulyasiyası", margin, 25);
+  doc.setFontSize(18);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Case Management Simulyasiyası', margin, 22);
 
   doc.setFontSize(10);
-  doc.text(`Tələbə: ${submission.studentName}`, margin, 40);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Sosial-Psixoloji Qiymətləndirmə Forması', margin, 31);
 
+  doc.setFillColor(255, 255, 255, 0.2);
+  doc.roundedRect(margin, 37, W - margin * 2, 10, 2, 2, 'F');
+  doc.setTextColor(220, 252, 231);
+  doc.setFontSize(9);
+  doc.text(`Tələbə: ${submission.studentName}`, margin + 4, 43.5);
+  doc.text(`Tarix: ${new Date(submission.timestamp).toLocaleString('az-AZ')}`, W - margin - 4, 43.5, { align: 'right' });
+
+  y = 60;
   doc.setTextColor(...DARK);
 
-  // ───────── SECTIONS ─────────
-  section("I BÖLMƏ: İDENTİFİKASİYA");
-  row("Ad Soyad", d.fullName);
-  row("FİN", d.fin);
-  row("Tarix", d.date);
-  row("Cins", d.gender);
+  // ── SECTION 1 ──
+  sectionHeader('I BÖLMƏ: İDENTİFİKASİYA VƏ HÜQUQİ DAİRƏ', '📄');
+  row('Protokol №', d.protocolNo);
+  row('Tarix', d.date);
+  row('Mütəxəssis', d.specialist);
+  row('Benefisiar', d.fullName);
+  row('FİN', d.fin);
+  row('Doğum tarixi', d.birthDate);
+  row('Cins', d.gender);
+  row('Şəxsiyyət vəsiqəsi', d.idCard);
+  if (d.idCard) row('  Seriya', d.idCardSeries, 4);
+  row('Doğum şəhadətnaməsi', d.birthCert);
+  row('Nikah/Ölüm şəhadətnaməsi', d.marriageCert);
+  row('Qazi/Şəhid statusu', d.statusDoc);
+  row('Mütəxəssisin qeydi', d.section1Note);
 
-  section("II BÖLMƏ: AİLƏ");
-  row("Ailə üzvləri", d.familyMembers);
-  row("Dəstək şəxs", d.supportPerson);
+  // ── SECTION 2 ──
+  sectionHeader('II BÖLMƏ: AİLƏ DİNAMİKASI VƏ SOSİAL ŞƏBƏKƏ', '👨‍👩‍👧');
+  row('Ailə üzvləri', d.familyMembers);
+  row('Qərar qəbul edən', d.decisionMaker);
+  row('Məhkəmə çəkişməsi', d.legalDispute);
+  row('Dəstək şəxsi', d.supportPerson);
+  row('Yaşayış mühiti', d.livingEnv);
+  row('Mütəxəssisin qeydi', d.section2Note);
 
-  section("III BÖLMƏ: SAĞLAMLIQ");
-  row("Diaqnoz", d.diagnosis);
-  row("Psixi vəziyyət", d.mentalHealth);
+  // ── SECTION 3 ──
+  sectionHeader('III BÖLMƏ: TİBBİ STATUS VƏ FUNKSİONAL İMKANLAR', '🩺');
+  row('Diaqnozlar', d.diagnosis);
+  row('Xəstəxanada yatma', d.hospitalized);
+  row('Özünəqulluq', d.selfCare);
+  row('Cihazlar', d.devices);
+  row('Psixi sağlamlıq', d.mentalHealth);
+  row('Mütəxəssisin qeydi', d.section3Note);
 
-  section("IV BÖLMƏ: SOSİAL VƏZİYYƏT");
-  row("Təhsil", d.education);
-  row("Borclar", d.debts);
+  // ── SECTION 4 ──
+  sectionHeader('IV BÖLMƏ: TƏHSİL, MƏŞĞULLUQ VƏ MALİYYƏ', '🎓');
+  row('Təhsil və peşə', d.education);
+  row('Gəlir bağlayır?', d.incomeCovers);
+  row('Bank borcları', d.debts);
+  row('İşləmək istəyi', d.workInterest);
+  row('İstedadlar', d.talent);
+  row('Mütəxəssisin qeydi', d.section4Note);
 
-  section("V BÖLMƏ: RİSKLƏR");
-  row("İntihar riski", d.riskSuicide);
-  row("Evsizlik riski", d.riskHomeless);
+  // ── SECTION 5 ──
+  sectionHeader('V BÖLMƏ: MÜRACİƏT SƏBƏBİ, RİSKLƏR VƏ GÖZLƏNTİLƏR', '⚠️');
+  row('Müraciət triqeri', d.trigger);
+  row('İntihar riski', d.riskSuicide);
+  row('Evsizlik riski', d.riskHomeless);
+  row('Tərk edilmə riski', d.riskAbandonment);
 
-  section("VI BÖLMƏ: SWOT");
-  row("Güclü tərəflər", d.swotS);
-  row("Zəif tərəflər", d.swotW);
-  row("İmkanlar", d.swotO);
-  row("Təhlükələr", d.swotT);
+  checkY(10);
+  doc.setTextColor(...GRAY);
+  doc.setFontSize(7.5);
+  doc.setFont('helvetica', 'bold');
+  doc.text('XİDMƏT EHTİYACLARI:', margin + 3, y + 5);
+  y += 8;
 
-  row("Yekun rəy", d.finalOpinion);
+  needsRow('Günərzi qayğı', d.needDayCare);
+  needsRow('Sığınacaq', d.needShelter);
+  needsRow('Psixososial dəstək', d.needPsycho);
+  needsRow('Maddi yardım', d.needFinancial);
+  needsRow('Peşə yönümlü yardım', d.needVocational);
+  y += 2;
+  row('Mütəxəssisin qeydi', d.section5Note);
 
-  doc.save(`case-${submission.studentName}.pdf`);
+  // ── SECTION 6 ──
+  sectionHeader('VI BÖLMƏ: SWOT ANALİZİ', '✅');
+  row('💪 Güclü tərəflər', d.swotS);
+  row('⚡ Zəif tərəflər', d.swotW);
+  row('🚀 İmkanlar', d.swotO);
+  row('🔴 Təhlükələr', d.swotT);
+
+  checkY(16);
+  doc.setFillColor(220, 252, 231);
+  doc.roundedRect(margin, y, W - margin * 2, 14, 2, 2, 'F');
+  doc.setDrawColor(...GREEN);
+  doc.setLineWidth(0.5);
+  doc.roundedRect(margin, y, W - margin * 2, 14, 2, 2, 'S');
+  doc.setTextColor(20, 83, 45);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'bold');
+  doc.text('MÜTƏXƏSSİS RƏYİ:', margin + 4, y + 5.5);
+  doc.setFont('helvetica', 'normal');
+  const opLines = doc.splitTextToSize(d.finalOpinion || '—', W - margin * 2 - 45);
+  doc.text(opLines, margin + 42, y + 5.5);
+  y += 16;
+
+  // ── FOOTER on last page ──
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(7);
+    doc.setTextColor(...GRAY);
+    doc.text(`Səhifə ${i} / ${pageCount}`, W / 2, 290, { align: 'center' });
+    doc.text(`Case Management Simulyasiyası — ${submission.studentName}`, margin, 290);
+  }
+
+  const fileName = `case-management-${submission.studentName.replace(/\s+/g, '-')}-${Date.now()}.pdf`;
+  doc.save(fileName);
+  showToast('📄 PDF uğurla yükləndi!', 'success');
 }
 
-// ───────── TEST BUTTON ─────────
-function test() {
-  generatePDF({
-    studentName: "Test User",
-    formData: {
-      fullName: "Əli Məmmədov",
-      fin: "7AB12CD",
-      date: "2026-05-16",
-      gender: "Kişi",
-      familyMembers: "Ana, ata, 2 qardaş",
-      supportPerson: "Ana",
-      diagnosis: "Sağlam",
-      mentalHealth: "Normal",
-      education: "Ali təhsil",
-      debts: "Yoxdur",
-      riskSuicide: "Aşağı",
-      riskHomeless: "Yox",
-      swotS: "Güclü motivasiya",
-      swotW: "Stress",
-      swotO: "İş imkanları",
-      swotT: "Maliyyə riskləri",
-      finalOpinion: "Stabil sosial vəziyyət"
-    }
-  });
+// ══════════════════════════════════════════════
+// TEACHER VIEW
+// ══════════════════════════════════════════════
+function renderSubmissions() {
+  const list = document.getElementById('submissions-list');
+  const subs = JSON.parse(localStorage.getItem('submissions') || '[]').reverse();
+
+  if (subs.length === 0) {
+    list.innerHTML = '<div class="empty-state">📭 Hələ heç bir nəticə yoxdur.</div>';
+    return;
+  }
+
+  list.innerHTML = subs.map(s => `
+    <div class="submission-card">
+      <div class="submission-top">
+        <div>
+          <div class="submission-name">${s.studentName}</div>
+          <div class="submission-time">${new Date(s.timestamp).toLocaleString('az-AZ')}</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span class="badge-done">Tamamlanıb</span>
+          <button class="btn btn-pdf" onclick='downloadExistingPDF(${JSON.stringify(s).replace(/'/g, "&#39;")})' style="padding:6px 14px;font-size:12px;">📄 PDF</button>
+          <button class="btn btn-ghost" onclick="deleteSubmission(${s.id})" style="font-size:12px;color:var(--red)">🗑</button>
+        </div>
+      </div>
+      <div class="submission-meta">
+        <div class="meta-item"><span>Benefisiar</span><p>${s.formData.fullName || '—'}</p></div>
+        <div class="meta-item"><span>Protokol №</span><p>${s.formData.protocolNo || '—'}</p></div>
+        <div class="meta-item"><span>Mütəxəssis</span><p>${s.formData.specialist || '—'}</p></div>
+        <div class="meta-item" style="grid-column:span 2"><span>Yekun Rəy</span><p style="font-style:italic;color:var(--neutral-500)">${s.formData.finalOpinion || 'Rəy yoxdur'}</p></div>
+      </div>
+    </div>
+  `).join('');
 }
 
+function downloadExistingPDF(s) { generatePDF(s); }
+
+function deleteSubmission(id) {
+  if (!confirm('Bu nəticəni silmək istəyirsiniz?')) return;
+  const subs = JSON.parse(localStorage.getItem('submissions') || '[]').filter(s => s.id !== id);
+  localStorage.setItem('submissions', JSON.stringify(subs));
+  renderSubmissions();
+  showToast('🗑 Silindi', 'error');
+}
+
+// ══════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── Keyboard enter on login ──
+document.getElementById('login-name').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
 </script>
-
-<button onclick="test()">PDF TEST</button>
-
 </body>
-</html>
+</html> 
